@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neon Arcade</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>Neon Arcade</h1>
+    <nav>
+      <button data-scene="ttt">Tic Tac Toe</button>
+      <button data-scene="snake">Snake</button>
+      <button data-scene="breakout">Breakout</button>
+    </nav>
+  </header>
+  <div id="scene" class="placeholder"></div>
+  <script>
+    // Load the latest boot.js with cache busting
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/gh/ChrisCanino19/neon-arcade@main/boot.js?v=' + Date.now();
+    document.head.appendChild(s);
+  </script>
+</body>
+</html>
