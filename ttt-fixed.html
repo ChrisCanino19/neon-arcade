@@ -1,0 +1,104 @@
+<!doctype html>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Tic Tac Toe — Neon Arcade</title>
+<style>
+  :root { --bg:#0a1130; --txt:#e8f0ff; --muted:#9db0d3; --cell:#182247; --line:#7dfcff33; }
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.5 system-ui,Segoe UI,Roboto,Helvetica,Arial}
+  h1{margin:16px;text-align:center;font-weight:800}
+  .wrap{max-width:900px;margin:0 auto;padding:0 16px}
+  .hud{display:flex;justify-content:space-between;align-items:center;margin:8px 0}
+  .btn{padding:8px 12px;border-radius:10px;border:1px solid #fff3;background:#ffffff18;color:var(--txt);cursor:pointer}
+  .status{color:var(--muted)}
+  .board{display:grid;grid-template-columns:repeat(3,100px);gap:10px;justify-content:center;margin:12px 0}
+  .cell{width:100px;height:100px;border-radius:12px;border:1px solid var(--line);background:var(--cell);
+        font-size:44px;font-weight:800;color:#7dfcff;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .cell.o{color:#ff9df0}
+  .cell.win{box-shadow:0 0 12px #0ff,0 0 18px #f0f}
+  .score{color:var(--muted);text-align:center}
+</style>
+
+<div class="wrap">
+  <h1>Tic Tac Toe</h1>
+  <div class="hud">
+    <div class="status">Player <span id="turn">X</span>'s turn</div>
+    <button id="reset" class="btn">Reset</button>
+  </div>
+  <div id="board" class="board"></div>
+  <div class="score">X: <span id="sx">0</span> — O: <span id="so">0</span></div>
+</div>
+
+<script>
+(() => {
+  const boardEl = document.getElementById('board');
+  const turnEl = document.getElementById('turn');
+  const statusEl = document.querySelector('.status');
+  const resetBtn = document.getElementById('reset');
+  const sxEl = document.getElementById('sx');
+  const soEl = document.getElementById('so');
+
+  let board = Array(9).fill('');
+  let cells = [];
+  let turn = 'X';
+  let over = false;
+  let xWins = 0, oWins = 0;
+
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  function setStatus(msg){ statusEl.textContent = msg; }
+  function paint(){
+    boardEl.innerHTML = '';
+    cells = [];
+    for(let i=0;i<9;i++){
+      const btn = document.createElement('button');
+      btn.className = 'cell';
+      btn.dataset.i = i;
+      btn.textContent = board[i];
+      if(board[i]==='O') btn.classList.add('o');
+      btn.addEventListener('click', onCell);
+      boardEl.appendChild(btn);
+      cells[i] = btn;
+    }
+  }
+  function checkWin(){
+    for(const [a,b,c] of wins){
+      if(board[a] && board[a]===board[b] && board[a]===board[c]) return [a,b,c];
+    }
+    return null;
+  }
+  function onCell(e){
+    if(over) return;
+    const i = +e.currentTarget.dataset.i;
+    if(board[i]) return;
+    board[i] = turn;
+    e.currentTarget.textContent = turn;
+    if(turn==='O') e.currentTarget.classList.add('o');
+
+    const line = checkWin();
+    if(line){
+      over = true;
+      for(const k of line) cells[k].classList.add('win');
+      if(turn==='X'){ xWins++; sxEl.textContent = xWins; } else { oWins++; soEl.textContent = oWins; }
+      setStatus('Player ' + turn + ' wins!');
+      return;
+    }
+    if(board.every(Boolean)){
+      over = true; setStatus('Draw.');
+      return;
+    }
+    turn = (turn==='X') ? 'O' : 'X';
+    turnEl.textContent = turn;
+    setStatus("Player " + turn + "'s turn");
+  }
+  resetBtn.addEventListener('click', () => {
+    board = Array(9).fill(''); over = false; turn = 'X';
+    turnEl.textContent = turn; setStatus("Player X's turn");
+    paint();
+  });
+  paint();
+})();
+</script>
